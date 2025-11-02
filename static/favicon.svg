@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">CashflowCast Icon</title>
+  <desc id="desc">Rounded square gradient with stylised C monogram</desc>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#gradient)" />
+  <path
+    d="M338 164c-35.4-22.7-85.5-22-119.6 6.9-36.8 30.7-41.7 86.6-10.9 122.3 28.9 33.6 78.7 38.7 113.1 18.3 12.2-7.3 27.9-0.9 27.9 13.7 0 8.4-4.5 16.4-12.1 21.1-52.9 32-123.3 21.5-162.5-25.7-42.9-51.7-36.5-129.2 15.2-172.1 45.9-38.1 113.2-40.9 163-6.2 7 4.9 11.2 13 11.2 21.5 0 14.7-16 24-27.8 14.2z"
+    fill="#0f172a"
+  />
+</svg>

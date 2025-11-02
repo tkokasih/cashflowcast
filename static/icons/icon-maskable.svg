@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">CashflowCast Maskable Icon</title>
+  <desc id="desc">Full-bleed gradient tile optimised for maskable icons</desc>
+  <defs>
+    <linearGradient id="maskable-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#maskable-gradient)" />
+  <g transform="translate(256 256) scale(0.72) translate(-256 -256)">
+    <rect x="64" y="64" width="384" height="384" rx="112" fill="#0f172a" fill-opacity="0.12" />
+    <path
+      d="M360 156c-45-33-110.6-32.1-154.8 8.2-48.5 43.4-52 119-7.5 166.9 41.8 45.3 110.5 53 159.5 23.6 10.7-6.3 24.8-1.2 24.8 11.4 0 7.3-3.8 14.3-10.2 18.1-64.8 38.8-150.6 26.2-198.4-31.1-51.2-61.3-42-153.5 20.3-205 54.7-44.7 135.5-47.6 195.5-7.2 6.5 4.4 10.4 11.7 10.4 19.4 0 13.2-14.3 21.6-24.6 13.7z"
+      fill="#0f172a"
+    />
+  </g>
+</svg>

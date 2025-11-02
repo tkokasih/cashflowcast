@@ -1,0 +1,1 @@
+# GitHub Pages looks for this marker to disable its default Jekyll processing so our prebuilt PWA assets (like service workers, manifest files, and files with underscores) are served as-is.
