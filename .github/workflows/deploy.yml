@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main
+      - '**'
   workflow_dispatch:
 
 permissions:
@@ -28,6 +28,26 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Configure deployment paths
+        run: |
+          REPO_NAME="${{ github.event.repository.name }}"
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+          BRANCH_SLUG="$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g' | sed -E 's/^-+|-+$//g')"
+
+          if [ -z "${BRANCH_SLUG}" ]; then
+            BRANCH_SLUG="preview"
+          fi
+
+          if [ "${BRANCH_NAME}" = "main" ]; then
+            echo "BASE_PATH=/${REPO_NAME}" >> "${GITHUB_ENV}"
+            echo "OUTPUT_SUBDIR=" >> "${GITHUB_ENV}"
+          else
+            echo "BASE_PATH=/${REPO_NAME}/${BRANCH_SLUG}" >> "${GITHUB_ENV}"
+            echo "OUTPUT_SUBDIR=${BRANCH_SLUG}" >> "${GITHUB_ENV}"
+          fi
+
+          echo "BRANCH_SLUG=${BRANCH_SLUG}" >> "${GITHUB_ENV}"
+
       - name: Install dependencies
         run: npm install
 
@@ -43,7 +63,15 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          BASE_PATH: /${{ github.event.repository.name }}
+          BASE_PATH: ${{ env.BASE_PATH }}
+
+      - name: Scope preview artifact to branch path
+        if: env.OUTPUT_SUBDIR != ''
+        run: |
+          mv build build-root
+          mkdir -p build/${OUTPUT_SUBDIR}
+          cp -a build-root/. build/${OUTPUT_SUBDIR}/
+          rm -rf build-root
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
