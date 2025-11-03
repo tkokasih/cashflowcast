@@ -1,7 +1,17 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "types": ["svelte"]
+    "types": ["svelte"],
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "skipLibCheck": true
   },
   "include": ["src/**/*", "vite.config.ts", "svelte.config.js"]
 }

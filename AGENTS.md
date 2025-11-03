@@ -12,10 +12,16 @@ Welcome! This project is primarily developed via Codex Server and frequently fro
      - `npm run lint`
    - Resolve any issues they surface before marking the task complete.
 
-3. **Progressive Web App Focus**
+3. **Build Parity Checks**
+   - Before finalising work, mirror the production build steps locally:
+     - `npm run check`
+     - `npm run build`
+   - Address any failures from these commands so that the main-branch deployment remains stable.
+
+4. **Progressive Web App Focus**
    - The application is deployed directly to the `main` branch and published through GitHub Pages. Keep deployments safe for immediate release.
 
-4. **Text-Based Assets Preferred**
+5. **Text-Based Assets Preferred**
    - Whenever possible, avoid adding binary files (such as raster images). Favour vector or code-based assets that remain reviewable within Codex.
 
 Thank you for helping keep the workflow predictable and mobile-friendly!
