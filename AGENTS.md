@@ -24,4 +24,7 @@ Welcome! This project is primarily developed via Codex Server and frequently fro
 5. **Text-Based Assets Preferred**
    - Whenever possible, avoid adding binary files (such as raster images). Favour vector or code-based assets that remain reviewable within Codex.
 
+6. **Data Ownership Promise**
+   - CashflowCast will never operate a backend that touches user data. All persistence mechanisms must keep the user in full control (e.g. local storage, client-side exports, or user-directed backups to third-party storage providers).
+
 Thank you for helping keep the workflow predictable and mobile-friendly!
