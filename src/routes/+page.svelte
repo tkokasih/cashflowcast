@@ -26,16 +26,14 @@
         fill="url(#cashflowcast-wave)"
         opacity="0.35"
       />
-      <path
-        d="M-40 720 Q 360 840 840 700 T 1520 760 V960 H-40 Z"
-        fill="#0ea5e9"
-        opacity="0.15"
-      />
+      <path d="M-40 720 Q 360 840 840 700 T 1520 760 V960 H-40 Z" fill="#0ea5e9" opacity="0.15" />
     </svg>
   </div>
 
   <div class="max-w-2xl space-y-8">
-    <div class="inline-flex items-center space-x-3 rounded-full border border-slate-800/70 bg-slate-900/60 px-5 py-2 text-sm font-medium uppercase tracking-[0.4em] text-emerald-300/80">
+    <div
+      class="inline-flex items-center space-x-3 rounded-full border border-slate-800/70 bg-slate-900/60 px-5 py-2 text-sm font-medium uppercase tracking-[0.4em] text-emerald-300/80"
+    >
       <span>Progressive Web App</span>
     </div>
     <h1 class="text-4xl font-bold sm:text-5xl md:text-6xl">Welcome to CashflowCast</h1>
@@ -44,11 +42,15 @@
       introduce product updates, dashboards, or forecasts as your project grows.
     </p>
     <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-      <div class="flex items-center space-x-3 rounded-2xl border border-slate-800/60 bg-slate-900/70 px-6 py-4 shadow-lg shadow-emerald-500/10">
+      <div
+        class="flex items-center space-x-3 rounded-2xl border border-slate-800/60 bg-slate-900/70 px-6 py-4 shadow-lg shadow-emerald-500/10"
+      >
         <span class="text-sm uppercase tracking-[0.3em] text-slate-400">Status</span>
         <span class="text-lg font-semibold text-emerald-400">Online</span>
       </div>
-      <div class="flex items-center space-x-3 rounded-2xl border border-slate-800/60 bg-slate-900/50 px-6 py-4 shadow-lg shadow-sky-500/10">
+      <div
+        class="flex items-center space-x-3 rounded-2xl border border-slate-800/60 bg-slate-900/50 px-6 py-4 shadow-lg shadow-sky-500/10"
+      >
         <span class="text-sm uppercase tracking-[0.3em] text-slate-400">Mode</span>
         <span class="text-lg font-semibold text-sky-400">PWA Ready</span>
       </div>

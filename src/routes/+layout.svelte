@@ -21,12 +21,7 @@
   />
   <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   <link rel="mask-icon" href={`${base}/icons/icon-maskable.svg`} color="#0f172a" />
-  <link
-    rel="apple-touch-icon"
-    sizes="any"
-    type="image/svg+xml"
-    href={`${base}/icons/icon.svg`}
-  />
+  <link rel="apple-touch-icon" sizes="any" type="image/svg+xml" href={`${base}/icons/icon.svg`} />
 </svelte:head>
 
 <slot />
