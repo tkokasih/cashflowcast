@@ -110,7 +110,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const core = require('@actions/core');
             const marker = '<!-- preview-url -->';
             const branch = process.env.GITHUB_REF_NAME;
             const owner = context.repo.owner;
