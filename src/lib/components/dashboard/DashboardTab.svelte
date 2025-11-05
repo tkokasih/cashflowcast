@@ -2,8 +2,7 @@
   import type { ForecastRow, ForecastSummary } from '$lib/cashflow';
   import { formatCurrency } from '$lib/cashflow';
   import { LineChart, type ChartTabularData, type LineChartOptions } from '@carbon/charts-svelte';
-  import { ScaleTypes, type LineChart as CarbonLineChart } from '@carbon/charts';
-  import { tick } from 'svelte';
+  import { ScaleTypes } from '@carbon/charts';
 
   export let forecastRows: ForecastRow[] = [];
   export let summary: ForecastSummary;
@@ -12,79 +11,6 @@
   const baseChartWidth = 420;
   const chartHeight = 240;
   const pointSpacing = 72;
-  const minZoom = 1;
-  const maxZoom = 3;
-  let zoom = 1;
-
-  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
-
-  let chartContainer: HTMLDivElement | null = null;
-  let pinchStartDistance: number | null = null;
-  let pinchStartZoom = zoom;
-  let chartInstance: CarbonLineChart | undefined;
-
-  const handleTouchStart = (event: TouchEvent) => {
-    if (event.touches.length === 2) {
-      const [first, second] = [event.touches[0], event.touches[1]];
-      pinchStartDistance = Math.abs(first.clientX - second.clientX);
-      pinchStartZoom = zoom;
-    } else {
-      pinchStartDistance = null;
-      pinchStartZoom = zoom;
-    }
-  };
-
-  const handleTouchMove = async (event: TouchEvent) => {
-    if (!chartContainer || event.touches.length !== 2 || pinchStartDistance === null) {
-      return;
-    }
-
-    const container = chartContainer;
-    const [first, second] = [event.touches[0], event.touches[1]];
-    const horizontalDistance = Math.abs(first.clientX - second.clientX);
-
-    if (horizontalDistance <= 0) {
-      return;
-    }
-
-    event.preventDefault();
-
-    const scale = horizontalDistance / pinchStartDistance;
-    const nextZoom = clamp(
-      Number.parseFloat((pinchStartZoom * scale).toFixed(3)),
-      minZoom,
-      maxZoom
-    );
-
-    if (Math.abs(nextZoom - zoom) < 0.001) {
-      return;
-    }
-
-    const rect = container.getBoundingClientRect();
-    const viewportCenter = (first.clientX + second.clientX) / 2 - rect.left;
-    const currentContentWidth = targetWidth * zoom;
-    const contentOffset = container.scrollLeft + viewportCenter;
-    const ratio = currentContentWidth > 0 ? contentOffset / currentContentWidth : 0;
-
-    const nextContentWidth = targetWidth * nextZoom;
-    const maxScroll = Math.max(nextContentWidth - container.clientWidth, 0);
-    const desiredScrollLeft = ratio * nextContentWidth - viewportCenter;
-
-    zoom = nextZoom;
-    await tick();
-    container.scrollLeft = clamp(desiredScrollLeft, 0, maxScroll);
-
-    pinchStartDistance = horizontalDistance;
-    pinchStartZoom = zoom;
-  };
-
-  const handleTouchEnd = (event: TouchEvent) => {
-    if (event.touches.length < 2) {
-      pinchStartDistance = null;
-      pinchStartZoom = zoom;
-    }
-  };
-
   let chartRows: ChartTabularData = [];
   $: chartRows = forecastRows.length
     ? [
@@ -99,9 +25,7 @@
 
   $: targetWidth =
     chartRows.length > 1 ? baseChartWidth + (chartRows.length - 1) * pointSpacing : baseChartWidth;
-  $: chartWidth = targetWidth * zoom;
-
-  $: zoom = clamp(zoom, minZoom, maxZoom);
+  $: chartWidth = targetWidth;
 
   $: chartOptions = {
     theme: 'g100',
@@ -182,20 +106,11 @@
     <div class="mt-6 rounded-2xl border border-slate-800/60 bg-slate-950/80 p-4">
       {#if chartRows.length > 0}
         <div class="flex flex-col gap-4">
-          <div
-            class="overflow-x-auto"
-            bind:this={chartContainer}
-            on:touchstart={handleTouchStart}
-            on:touchmove={handleTouchMove}
-            on:touchend={handleTouchEnd}
-            on:touchcancel={handleTouchEnd}
-            style="touch-action: pan-y;"
-          >
-            <div class="h-48" style={`min-width: ${chartWidth}px;`}>
+          <div class="overflow-x-auto overflow-y-hidden" style="touch-action: pan-x;">
+            <div class="h-48" style={`width: ${chartWidth}px;`}>
               <LineChart
                 data={chartRows}
                 options={chartOptions}
-                bind:chart={chartInstance}
                 aria-label="Projected balance line chart"
               />
             </div>
