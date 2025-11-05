@@ -1,59 +1,120 @@
-<section
-  class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-950 px-6 py-16 text-center text-slate-100"
->
-  <div class="absolute inset-0 -z-10">
-    <svg
-      class="h-full w-full"
-      viewBox="0 0 1440 960"
-      role="presentation"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <defs>
-        <radialGradient id="cashflowcast-halo" cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stop-color="#34d399" stop-opacity="0.35" />
-          <stop offset="45%" stop-color="#22d3ee" stop-opacity="0.25" />
-          <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
-        </radialGradient>
-        <linearGradient id="cashflowcast-wave" x1="0%" x2="100%" y1="0%" y2="0%">
-          <stop offset="0%" stop-color="#1d4ed8" stop-opacity="0.75" />
-          <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.45" />
-        </linearGradient>
-      </defs>
-      <rect fill="url(#cashflowcast-halo)" height="960" width="1440" />
-      <path
-        d="M-80 640 Q 360 520 720 680 T 1520 620 V960 H-80 Z"
-        fill="url(#cashflowcast-wave)"
-        opacity="0.35"
-      />
-      <path d="M-40 720 Q 360 840 840 700 T 1520 760 V960 H-40 Z" fill="#0ea5e9" opacity="0.15" />
-    </svg>
-  </div>
+<script lang="ts">
+  import DashboardTab from '$lib/components/dashboard/DashboardTab.svelte';
+  import EntriesTab from '$lib/components/entries/EntriesTab.svelte';
+  import BottomTabs from '$lib/components/navigation/BottomTabs.svelte';
+  import ProjectHeader from '$lib/components/project/ProjectHeader.svelte';
+  import {
+    createBlankFormState,
+    entryFromForm,
+    formStateFromEntry,
+    generateForecast,
+    sampleProject,
+    summariseForecast,
+    type CashflowEntry,
+    type EntryFormState,
+    type Project
+  } from '$lib/cashflow';
 
-  <div class="max-w-2xl space-y-8">
-    <div
-      class="inline-flex items-center space-x-3 rounded-full border border-slate-800/70 bg-slate-900/60 px-5 py-2 text-sm font-medium uppercase tracking-[0.4em] text-emerald-300/80"
-    >
-      <span>Progressive Web App</span>
-    </div>
-    <h1 class="text-4xl font-bold sm:text-5xl md:text-6xl">Welcome to CashflowCast</h1>
-    <p class="text-lg leading-relaxed text-slate-300">
-      Your hello world experience now ships with an expressive SVG backdrop. Tailor this canvas to
-      introduce product updates, dashboards, or forecasts as your project grows.
-    </p>
-    <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-      <div
-        class="flex items-center space-x-3 rounded-2xl border border-slate-800/60 bg-slate-900/70 px-6 py-4 shadow-lg shadow-emerald-500/10"
-      >
-        <span class="text-sm uppercase tracking-[0.3em] text-slate-400">Status</span>
-        <span class="text-lg font-semibold text-emerald-400">Online</span>
-      </div>
-      <div
-        class="flex items-center space-x-3 rounded-2xl border border-slate-800/60 bg-slate-900/50 px-6 py-4 shadow-lg shadow-sky-500/10"
-      >
-        <span class="text-sm uppercase tracking-[0.3em] text-slate-400">Mode</span>
-        <span class="text-lg font-semibold text-sky-400">PWA Ready</span>
-      </div>
-    </div>
-  </div>
-</section>
+  type Tab = 'dashboard' | 'entries';
+
+  const navigation = [
+    { id: 'dashboard', label: 'Dashboard', iconPath: 'M3 17l6-6 4 4 8-8M21 21H3V3m0 0h18' },
+    {
+      id: 'entries',
+      label: 'Entries',
+      iconPath: 'M9 7h11M9 12h11M9 17h11M4 7h.01M4 12h.01M4 17h.01'
+    }
+  ];
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  function cloneProject(value: Project): Project {
+    return {
+      ...value,
+      entries: value.entries.map((entry) => ({
+        ...entry,
+        recurrence: { ...entry.recurrence }
+      }))
+    };
+  }
+
+  let activeTab: Tab = 'dashboard';
+  let project: Project = cloneProject(sampleProject);
+  let formState: EntryFormState = createBlankFormState(today);
+
+  $: forecastRows = generateForecast(project);
+  $: summary = summariseForecast(forecastRows, project.openingBalance);
+
+  function resetForm() {
+    formState = createBlankFormState(today);
+  }
+
+  function upsertEntry(entry: CashflowEntry) {
+    const exists = project.entries.some((current) => current.id === entry.id);
+    const entries = exists
+      ? project.entries.map((current) => (current.id === entry.id ? entry : current))
+      : [...project.entries, entry];
+    project = { ...project, entries };
+    resetForm();
+  }
+
+  function handleEntrySubmit() {
+    const entry = entryFromForm(formState, project);
+    upsertEntry(entry);
+  }
+
+  function handleEntryEdit(event: CustomEvent<{ entry: CashflowEntry }>) {
+    formState = formStateFromEntry(event.detail.entry);
+    activeTab = 'entries';
+  }
+
+  function handleEntryRemove(event: CustomEvent<{ id: string }>) {
+    const { id } = event.detail;
+    project = { ...project, entries: project.entries.filter((entry) => entry.id !== id) };
+    if (formState.id === id) {
+      resetForm();
+    }
+  }
+
+  function handleTabSelect(event: CustomEvent<{ id: string }>) {
+    activeTab = event.detail.id as Tab;
+  }
+</script>
+
+<svelte:head>
+  <title>{project.name} · CashflowCast</title>
+  <meta
+    name="description"
+    content="Mobile-first cashflow projection dashboard with editable recurring entries."
+  />
+</svelte:head>
+
+<div class="flex min-h-screen flex-col bg-slate-950 text-slate-100">
+  <ProjectHeader
+    name={project.name}
+    description={project.description}
+    openingBalance={project.openingBalance}
+    currency={project.currency}
+    horizonMonths={project.horizonMonths}
+    lastUpdated={project.lastUpdated}
+    githubPagesUrl={project.githubPagesUrl}
+  />
+
+  <main class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-5 pb-28 pt-6">
+    {#if activeTab === 'dashboard'}
+      <DashboardTab {forecastRows} {summary} currency={project.currency} />
+    {:else}
+      <EntriesTab
+        bind:formState
+        entries={project.entries}
+        currency={project.currency}
+        on:submit={handleEntrySubmit}
+        on:reset={resetForm}
+        on:edit={handleEntryEdit}
+        on:remove={handleEntryRemove}
+      />
+    {/if}
+  </main>
+
+  <BottomTabs items={navigation} activeId={activeTab} on:select={handleTabSelect} />
+</div>
