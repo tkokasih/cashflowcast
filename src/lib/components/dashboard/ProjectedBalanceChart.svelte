@@ -43,6 +43,14 @@
   $: previewWidth = computeWidth(previewRows.length, previewPointSpacing);
   $: fullscreenWidth = computeWidth(fullscreenRows.length, fullscreenPointSpacing);
 
+  const formatCompactCurrency = (value: number, currencyCode: string) =>
+    new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+      notation: 'compact',
+      maximumFractionDigits: 1
+    }).format(value);
+
   const shortenLabel = (label: string) => {
     if (!label) return label;
     if (label === 'Opening') return 'Open';
@@ -63,6 +71,7 @@
   const baseOptions = (
     height: number,
     labelFormatter: (value: string) => string,
+    valueFormatter: (value: number) => string,
     zoomEnabled: boolean
   ) =>
     ({
@@ -85,7 +94,7 @@
           mapsTo: 'value',
           scaleType: ScaleTypes.LINEAR,
           ticks: {
-            formatter: (tick: number | Date) => formatCurrency(Number(tick), currency)
+            formatter: (tick: number | Date) => valueFormatter(Number(tick))
           }
         }
       },
@@ -113,8 +122,18 @@
       }
     }) satisfies LineChartOptions;
 
-  $: previewOptions = baseOptions(previewChartHeight, shortenLabel, false);
-  $: fullscreenOptions = baseOptions(fullscreenChartHeight, (label) => label, true);
+  $: previewOptions = baseOptions(
+    previewChartHeight,
+    shortenLabel,
+    (value) => formatCompactCurrency(value, currency),
+    false
+  );
+  $: fullscreenOptions = baseOptions(
+    fullscreenChartHeight,
+    (label) => label,
+    (value) => formatCurrency(value, currency),
+    true
+  );
 
   const lockBodyScroll = () => {
     if (!browser || previousBodyOverflow !== null) return;
@@ -201,8 +220,11 @@
           on:click={handleExpand}
           aria-label="Expand projected balance chart"
         >
-          <div class="pointer-events-none">
-            <div class="h-48" style={`width: ${previewWidth}px;`}>
+          <div class="pointer-events-none preview-chart">
+            <div
+              class="w-full"
+              style={`height: ${previewChartHeight}px; width: ${previewWidth}px; max-width: 100%;`}
+            >
               <LineChart
                 data={previewRows}
                 options={previewOptions}
@@ -262,3 +284,13 @@
     </div>
   </div>
 {/if}
+
+<style>
+  .preview-chart :global(.cds--axis .tick text) {
+    font-size: 0.625rem;
+  }
+
+  .preview-chart :global(.cds--axis .tick text tspan) {
+    font-size: inherit;
+  }
+</style>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { base } from '$app/paths';
   import { onMount } from 'svelte';
-  import '@carbon/charts-svelte/styles.css';
+  import '@carbon/charts/styles.css';
   import '../app.css';
 
   onMount(() => {
