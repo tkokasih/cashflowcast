@@ -37,6 +37,8 @@ jobs:
           REPO_OWNER="${{ github.repository_owner }}"
           REPO_NAME="${{ github.event.repository.name }}"
           BRANCH_NAME="${GITHUB_REF_NAME}"
+          SHORT_SHA="$(git rev-parse --short HEAD)"
+          BUILD_TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           BRANCH_SLUG="$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g' | sed -E 's/^-+|-+$//g')"
 
           if [ -z "${BRANCH_SLUG}" ]; then
@@ -56,6 +58,9 @@ jobs:
           echo "BRANCH_SLUG=${BRANCH_SLUG}" >> "${GITHUB_ENV}"
           echo "VITE_GITHUB_BRANCH=${BRANCH_NAME}" >> "${GITHUB_ENV}"
           echo "VITE_GITHUB_REPOSITORY=${REPO_OWNER}/${REPO_NAME}" >> "${GITHUB_ENV}"
+          echo "VITE_BUILD_SHA=${SHORT_SHA}" >> "${GITHUB_ENV}"
+          echo "VITE_BUILD_BRANCH=${BRANCH_NAME}" >> "${GITHUB_ENV}"
+          echo "VITE_BUILD_TIMESTAMP=${BUILD_TIMESTAMP}" >> "${GITHUB_ENV}"
           echo "DEPLOYMENT_URL=${PAGE_URL}" >> "${GITHUB_ENV}"
           echo "deployment_url=${PAGE_URL}" >> "${GITHUB_OUTPUT}"
 
@@ -77,6 +82,9 @@ jobs:
           BASE_PATH: ${{ env.BASE_PATH }}
           VITE_GITHUB_BRANCH: ${{ env.VITE_GITHUB_BRANCH }}
           VITE_GITHUB_REPOSITORY: ${{ env.VITE_GITHUB_REPOSITORY }}
+          VITE_BUILD_SHA: ${{ env.VITE_BUILD_SHA }}
+          VITE_BUILD_BRANCH: ${{ env.VITE_BUILD_BRANCH }}
+          VITE_BUILD_TIMESTAMP: ${{ env.VITE_BUILD_TIMESTAMP }}
 
       - name: Scope preview artifact to branch path
         if: env.OUTPUT_SUBDIR != ''
