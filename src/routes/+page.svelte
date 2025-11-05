@@ -91,15 +91,7 @@
 </svelte:head>
 
 <div class="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-  <ProjectHeader
-    name={project.name}
-    description={project.description}
-    openingBalance={project.openingBalance}
-    currency={project.currency}
-    horizonMonths={project.horizonMonths}
-    lastUpdated={project.lastUpdated}
-    githubPagesUrl={project.githubPagesUrl}
-  />
+  <ProjectHeader name={project.name} description={project.description} />
 
   <main class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-5 pb-28 pt-6">
     {#if activeTab === 'dashboard'}
