@@ -2,6 +2,7 @@
   import DashboardTab from '$lib/components/dashboard/DashboardTab.svelte';
   import EntriesTab from '$lib/components/entries/EntriesTab.svelte';
   import BottomTabs from '$lib/components/navigation/BottomTabs.svelte';
+  import AppFooter from '$lib/components/navigation/AppFooter.svelte';
   import ProjectHeader from '$lib/components/project/ProjectHeader.svelte';
   import {
     createBlankFormState,
@@ -114,6 +115,8 @@
         on:remove={handleEntryRemove}
       />
     {/if}
+
+    <AppFooter className="mt-auto border-t border-slate-800/70 pt-4" />
   </main>
 
   <BottomTabs items={navigation} activeId={activeTab} on:select={handleTabSelect} />
