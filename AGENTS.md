@@ -29,4 +29,7 @@ Welcome! This project is primarily developed via Codex Server and frequently fro
 6. **Text-Based Assets Preferred**
    - Whenever possible, avoid adding binary files (such as raster images). Favour vector or code-based assets that remain reviewable within Codex.
 
+7. **Mobile-First Snapshots**
+   - If you provide visual snapshots or screenshots for review, capture them using a mobile viewport (roughly 375px wide) to reflect the primary target experience.
+
 Thank you for helping keep the workflow predictable and mobile-friendly!

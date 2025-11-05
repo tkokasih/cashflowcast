@@ -36,5 +36,8 @@
     "tslib": "^2.6.3",
     "typescript": "^5.5.3",
     "vite": "^5.3.1"
+  },
+  "dependencies": {
+    "@carbon/charts-svelte": "^1.22.18"
   }
 }

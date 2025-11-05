@@ -1,36 +1,76 @@
 <script lang="ts">
   import type { ForecastRow, ForecastSummary } from '$lib/cashflow';
   import { formatCurrency } from '$lib/cashflow';
+  import { LineChart, type ChartTabularData, type LineChartOptions } from '@carbon/charts-svelte';
+  import { ScaleTypes } from '@carbon/charts';
 
   export let forecastRows: ForecastRow[] = [];
   export let summary: ForecastSummary;
   export let currency: string;
 
-  const chartWidth = 320;
-  const chartHeight = 160;
+  const baseChartWidth = 420;
+  const chartHeight = 240;
+  const pointSpacing = 72;
+  let chartRows: ChartTabularData = [];
+  $: chartRows = forecastRows.length
+    ? [
+        { group: 'Balance', period: 'Opening', value: summary.openingBalance },
+        ...forecastRows.map((row) => ({
+          group: 'Balance',
+          period: row.label,
+          value: row.balance
+        }))
+      ]
+    : [];
 
-  $: chartPoints = forecastRows.map((row, index) => ({ index, balance: row.balance }));
-  $: balances = chartPoints.map((point) => point.balance);
-  $: minBalance = chartPoints.length
-    ? Math.min(summary.openingBalance, ...balances)
-    : summary.openingBalance;
-  $: maxBalance = chartPoints.length
-    ? Math.max(summary.openingBalance, ...balances)
-    : summary.openingBalance;
-  $: balanceRange = Math.max(1, maxBalance - minBalance);
+  $: targetWidth =
+    chartRows.length > 1 ? baseChartWidth + (chartRows.length - 1) * pointSpacing : baseChartWidth;
+  $: chartWidth = targetWidth;
 
-  $: linePath = chartPoints
-    .map((point, index) => {
-      const x =
-        chartPoints.length > 1 ? (index / (chartPoints.length - 1)) * chartWidth : chartWidth / 2;
-      const y = chartHeight - ((point.balance - minBalance) / balanceRange) * chartHeight;
-      return `${index === 0 ? 'M' : 'L'}${x},${y}`;
-    })
-    .join(' ');
-
-  $: areaPath = chartPoints.length
-    ? `${linePath} L${chartWidth},${chartHeight} L0,${chartHeight} Z`
-    : '';
+  $: chartOptions = {
+    theme: 'g100',
+    height: `${chartHeight}px`,
+    legend: { enabled: false },
+    grid: {
+      y: { enabled: true },
+      x: { enabled: true }
+    },
+    axes: {
+      bottom: {
+        mapsTo: 'period',
+        scaleType: ScaleTypes.LABELS
+      },
+      left: {
+        mapsTo: 'value',
+        scaleType: ScaleTypes.LINEAR,
+        ticks: {
+          formatter: (tick: number | Date) => formatCurrency(Number(tick), currency)
+        }
+      }
+    },
+    points: {
+      radius: 3,
+      enabled: true
+    },
+    curve: 'curveMonotoneX',
+    tooltip: {
+      valueFormatter: (value: unknown) => formatCurrency(Number(value), currency)
+    },
+    data: {
+      groupMapsTo: 'group'
+    },
+    getIsFilled: () => true,
+    getFillColor: () => 'rgba(56, 189, 248, 0.35)',
+    getStrokeColor: () => '#38bdf8',
+    color: {
+      scale: {
+        Balance: '#38bdf8'
+      }
+    },
+    canvasZoom: {
+      enabled: false
+    }
+  } satisfies LineChartOptions;
 </script>
 
 <section class="space-y-6">
@@ -64,23 +104,18 @@
       </div>
     </div>
     <div class="mt-6 rounded-2xl border border-slate-800/60 bg-slate-950/80 p-4">
-      {#if chartPoints.length > 0}
-        <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} class="h-48 w-full">
-          <defs>
-            <linearGradient id="balance-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="rgb(56 189 248)" stop-opacity="0.45" />
-              <stop offset="100%" stop-color="rgb(15 23 42)" stop-opacity="0" />
-            </linearGradient>
-          </defs>
-          <path d={areaPath} fill="url(#balance-fill)" stroke="none" />
-          <path
-            d={linePath}
-            fill="none"
-            stroke="rgb(56 189 248)"
-            stroke-width="2.5"
-            stroke-linecap="round"
-          />
-        </svg>
+      {#if chartRows.length > 0}
+        <div class="flex flex-col gap-4">
+          <div class="overflow-x-auto overflow-y-hidden" style="touch-action: pan-x;">
+            <div class="h-48" style={`width: ${chartWidth}px;`}>
+              <LineChart
+                data={chartRows}
+                options={chartOptions}
+                aria-label="Projected balance line chart"
+              />
+            </div>
+          </div>
+        </div>
       {:else}
         <p class="text-sm text-slate-500">Add entries to see the projection.</p>
       {/if}
