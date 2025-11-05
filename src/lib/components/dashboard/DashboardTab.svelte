@@ -22,7 +22,6 @@
   const pointSpacing = 72;
   const minZoom = 1;
   const maxZoom = 3;
-  const zoomStep = 0.25;
   let zoom = 1;
 
   const axisColor = 'rgb(71 85 105)';
@@ -30,13 +29,70 @@
 
   const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-  const handleZoomInput = (event: Event) => {
-    const { value } = event.currentTarget as HTMLInputElement;
-    zoom = clamp(Number.parseFloat(value), minZoom, maxZoom);
+  let chartContainer: HTMLDivElement | null = null;
+  let pinchStartDistance: number | null = null;
+  let pinchStartZoom = zoom;
+
+  const handleTouchStart = (event: TouchEvent) => {
+    if (event.touches.length === 2) {
+      const [first, second] = [event.touches[0], event.touches[1]];
+      pinchStartDistance = Math.abs(first.clientX - second.clientX);
+      pinchStartZoom = zoom;
+    } else {
+      pinchStartDistance = null;
+      pinchStartZoom = zoom;
+    }
   };
 
-  const adjustZoom = (delta: number) => {
-    zoom = clamp(Number.parseFloat((zoom + delta).toFixed(2)), minZoom, maxZoom);
+  const handleTouchMove = (event: TouchEvent) => {
+    if (!chartContainer || event.touches.length !== 2 || pinchStartDistance === null) {
+      return;
+    }
+
+    const container = chartContainer;
+    const [first, second] = [event.touches[0], event.touches[1]];
+    const horizontalDistance = Math.abs(first.clientX - second.clientX);
+
+    if (horizontalDistance <= 0) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const scale = horizontalDistance / pinchStartDistance;
+    const nextZoom = clamp(
+      Number.parseFloat((pinchStartZoom * scale).toFixed(3)),
+      minZoom,
+      maxZoom
+    );
+
+    if (Math.abs(nextZoom - zoom) < 0.001) {
+      return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const viewportCenter = (first.clientX + second.clientX) / 2 - rect.left;
+    const currentContentWidth = margins.left + innerWidth + margins.right;
+    const contentOffset = container.scrollLeft + viewportCenter;
+    const ratio = currentContentWidth > 0 ? contentOffset / currentContentWidth : 0;
+
+    const nextInnerWidth = targetInnerWidth * nextZoom;
+    const nextContentWidth = margins.left + nextInnerWidth + margins.right;
+    const maxScroll = Math.max(nextContentWidth - container.clientWidth, 0);
+    const desiredScrollLeft = ratio * nextContentWidth - viewportCenter;
+
+    zoom = nextZoom;
+    container.scrollLeft = clamp(desiredScrollLeft, 0, maxScroll);
+
+    pinchStartDistance = horizontalDistance;
+    pinchStartZoom = zoom;
+  };
+
+  const handleTouchEnd = (event: TouchEvent) => {
+    if (event.touches.length < 2) {
+      pinchStartDistance = null;
+      pinchStartZoom = zoom;
+    }
   };
 
   const niceStep = (min: number, max: number, tickCount: number) => {
@@ -207,46 +263,14 @@
     <div class="mt-6 rounded-2xl border border-slate-800/60 bg-slate-950/80 p-4">
       {#if chartPoints.length > 0}
         <div class="flex flex-col gap-4">
-          <div class="flex flex-col gap-2 text-xs text-slate-400">
-            <div class="flex items-center justify-between gap-3">
-              <span class="uppercase tracking-[0.3em]">Zoom</span>
-              <div class="flex items-center gap-2 text-slate-300">
-                <button
-                  type="button"
-                  class="flex h-7 w-7 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-base font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 disabled:opacity-40"
-                  on:click={() => adjustZoom(-zoomStep)}
-                  aria-label="Zoom out"
-                  disabled={zoom <= minZoom}
-                >
-                  −
-                </button>
-                <span class="w-12 text-right font-semibold text-slate-200 tabular-nums"
-                  >{zoom.toFixed(2)}×</span
-                >
-                <button
-                  type="button"
-                  class="flex h-7 w-7 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-base font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 disabled:opacity-40"
-                  on:click={() => adjustZoom(zoomStep)}
-                  aria-label="Zoom in"
-                  disabled={zoom >= maxZoom}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-            <input
-              id="projection-zoom"
-              type="range"
-              min={minZoom}
-              max={maxZoom}
-              step={zoomStep}
-              value={zoom}
-              on:input={handleZoomInput}
-              aria-label="Adjust projection chart zoom"
-              class="h-1 w-full cursor-pointer accent-sky-400"
-            />
-          </div>
-          <div class="overflow-x-auto">
+          <div
+            class="overflow-x-auto"
+            bind:this={chartContainer}
+            on:touchstart={handleTouchStart}
+            on:touchmove={handleTouchMove}
+            on:touchend={handleTouchEnd}
+            on:touchcancel={handleTouchEnd}
+          >
             <svg
               viewBox={`0 0 ${chartWidth} ${chartHeight}`}
               class="h-48"
