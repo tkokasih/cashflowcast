@@ -24,4 +24,7 @@ declare global {
   }
 }
 
-export {};
+type ModuleImportMetaEnv = globalThis.ImportMetaEnv;
+type ModuleImportMeta = globalThis.ImportMeta;
+
+export type { ModuleImportMetaEnv as ImportMetaEnv, ModuleImportMeta as ImportMeta };
