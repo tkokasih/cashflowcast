@@ -1,23 +1,30 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
-/// <reference types="svelte" />
-/// <reference types="vite/client" />
+import 'svelte';
+import 'vite/client';
 
-declare namespace App {
-  // interface Locals {}
-  // interface PageData {}
-  // interface PageState {}
-  // interface Platform {}
+declare global {
+  namespace App {
+    // interface Locals {}
+    // interface PageData {}
+    // interface PageState {}
+    // interface Platform {}
+  }
+
+  interface ImportMetaEnv {
+    readonly VITE_GITHUB_BRANCH?: string;
+    readonly VITE_GITHUB_REPOSITORY?: string;
+    readonly VITE_BUILD_SHA?: string;
+    readonly VITE_BUILD_BRANCH?: string;
+    readonly VITE_BUILD_TIMESTAMP?: string;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
 }
 
-interface ImportMetaEnv {
-  readonly VITE_GITHUB_BRANCH?: string;
-  readonly VITE_GITHUB_REPOSITORY?: string;
-  readonly VITE_BUILD_SHA?: string;
-  readonly VITE_BUILD_BRANCH?: string;
-  readonly VITE_BUILD_TIMESTAMP?: string;
-}
+type ModuleImportMetaEnv = globalThis.ImportMetaEnv;
+type ModuleImportMeta = globalThis.ImportMeta;
 
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
+export type { ModuleImportMetaEnv as ImportMetaEnv, ModuleImportMeta as ImportMeta };
