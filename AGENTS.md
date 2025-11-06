@@ -4,7 +4,7 @@ Welcome! This project is primarily developed via Codex Server and frequently fro
 
 1. **Collaborative Discovery First**
    - Before writing code, ask the user clarifying questions to confirm your understanding of the request.
-   - Offer at least two meaningful implementation approaches (or variants) for the user to choose from before proceeding.
+   - When there are meaningful design choices to be made, offer at least three distinct implementation approaches (or variants) for the user to choose from before proceeding.
 
 2. **Local Quality Gates**
    - After completing your implementation, always run the formatter and linter locally:
@@ -21,15 +21,10 @@ Welcome! This project is primarily developed via Codex Server and frequently fro
 4. **Progressive Web App Focus**
    - The application is deployed directly to the `main` branch and published through GitHub Pages. Keep deployments safe for immediate release.
 
-5. **Surface the Published URL**
-   - Use `npm run pages:url` to derive the GitHub Pages address for the current branch. The script mirrors the deploy workflow by parsing the GitHub remote owner and applying the same branch slug rules. If the repository has no configured `origin`, provide `GITHUB_REPOSITORY=owner/name` when running the command.
-   - When you summarise your work, include the computed address in the task summary exactly as `Expected GitHub Pages URL: https://<owner>.github.io/cashflowcast[/branch-slug]/` (branch suffix only when present).
-   - Add the same line to the pull request description so reviewers can open the deployment quickly.
-
-6. **Text-Based Assets Preferred**
+5. **Text-Based Assets Preferred**
    - Whenever possible, avoid adding binary files (such as raster images). Favour vector or code-based assets that remain reviewable within Codex.
 
-7. **Mobile-First Snapshots**
+6. **Mobile-First Snapshots**
    - If you provide visual snapshots or screenshots for review, capture them using a mobile viewport (roughly 375px wide) to reflect the primary target experience.
 
 Thank you for helping keep the workflow predictable and mobile-friendly!

@@ -2,6 +2,7 @@
   import DashboardTab from '$lib/components/dashboard/DashboardTab.svelte';
   import EntriesTab from '$lib/components/entries/EntriesTab.svelte';
   import BottomTabs from '$lib/components/navigation/BottomTabs.svelte';
+  import AppFooter from '$lib/components/navigation/AppFooter.svelte';
   import ProjectHeader from '$lib/components/project/ProjectHeader.svelte';
   import {
     createBlankFormState,
@@ -90,15 +91,7 @@
 </svelte:head>
 
 <div class="flex min-h-screen flex-col bg-slate-950 text-slate-100">
-  <ProjectHeader
-    name={project.name}
-    description={project.description}
-    openingBalance={project.openingBalance}
-    currency={project.currency}
-    horizonMonths={project.horizonMonths}
-    lastUpdated={project.lastUpdated}
-    githubPagesUrl={project.githubPagesUrl}
-  />
+  <ProjectHeader name={project.name} description={project.description} />
 
   <main class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-5 pb-28 pt-6">
     {#if activeTab === 'dashboard'}
@@ -114,6 +107,8 @@
         on:remove={handleEntryRemove}
       />
     {/if}
+
+    <AppFooter className="mt-auto border-t border-slate-800/70 pt-4" />
   </main>
 
   <BottomTabs items={navigation} activeId={activeTab} on:select={handleTabSelect} />
