@@ -46,8 +46,8 @@
   }
 </script>
 
-<section class="space-y-6">
-  <div class="space-y-3">
+<section class="space-y-4 sm:space-y-6">
+  <div class="space-y-2 sm:space-y-3">
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-semibold text-white">Recurring entries</h2>
       <button
@@ -58,7 +58,7 @@
         New entry
       </button>
     </div>
-    <div class="grid gap-4">
+    <div class="grid gap-3 sm:gap-4">
       {#each entries as entry (entry.id)}
         <article
           class="rounded-3xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg shadow-slate-900/40"
@@ -81,9 +81,9 @@
             </div>
           </div>
           {#if entry.notes}
-            <p class="mt-3 text-sm text-slate-300">{entry.notes}</p>
+            <p class="mt-2 text-sm text-slate-300 sm:mt-3">{entry.notes}</p>
           {/if}
-          <div class="mt-4 flex items-center justify-end gap-3 text-xs">
+          <div class="mt-3 flex items-center justify-end gap-3 text-xs sm:mt-4">
             <button
               class="rounded-full border border-slate-700 px-4 py-1 font-semibold uppercase tracking-[0.25em] text-slate-300 hover:bg-slate-800/80"
               type="button"
@@ -121,7 +121,7 @@
       Capture the schedule so it appears in the forecast immediately.
     </p>
     <form
-      class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2"
+      class="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:grid-cols-2 sm:gap-4"
       on:submit|preventDefault={() => dispatch('submit')}
     >
       <label class="flex flex-col gap-2 text-sm">

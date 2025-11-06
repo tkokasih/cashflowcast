@@ -93,7 +93,9 @@
 <div class="flex min-h-screen flex-col bg-slate-950 text-slate-100">
   <ProjectHeader name={project.name} description={project.description} />
 
-  <main class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-5 pb-28 pt-6">
+  <main
+    class="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-5 px-0 pb-24 pt-5 sm:gap-6 sm:px-5 sm:pb-28 sm:pt-6"
+  >
     {#if activeTab === 'dashboard'}
       <DashboardTab {forecastRows} {summary} currency={project.currency} />
     {:else}
